@@ -90,32 +90,59 @@ class MiRouterAPI:
     def xqnetwork_get_miscan_switch(self):
         return self.do_get_request("/xqnetwork/get_miscan_switch")
 
-    def xqnetwork_wan_info(self):
-        return self.do_get_request("/xqnetwork/wan_info")
+    def xqnetwork_wan_info(self) -> models.WANDetails:
+        return apply_model(
+            models.WANDetails,
+            self.do_get_request("/xqnetwork/wan_info")
+        )
 
-    def xqnetwork_wifi_macfilter_info(self):
-        return self.do_get_request("/xqnetwork/wifi_macfilter_info")
+    def xqnetwork_wifi_macfilter_info(self) -> models.MacFilterInfo:
+        return apply_model(
+            models.MacFilterInfo,
+            self.do_get_request("/xqnetwork/wifi_macfilter_info")
+        )
 
-    def xqnetwork_lan_dhcp(self):
-        return self.do_get_request("/xqnetwork/lan_dhcp")
+    def xqnetwork_lan_dhcp(self) -> models.LanDHCPDetails:
+        return apply_model(
+            models.LanDHCPDetails,
+            self.do_get_request("/xqnetwork/lan_dhcp")
+        )
 
-    def xqnetwork_lan_info(self):
-        return self.do_get_request("/xqnetwork/lan_info")
+    def xqnetwork_lan_info(self) -> models.LanInfoDetails:
+        return apply_model(
+            models.LanInfoDetails,
+            self.do_get_request("/xqnetwork/lan_info")
+        )
 
-    def xqnetwork_macbind_info(self):
-        return self.do_get_request("/xqnetwork/macbind_info")
+    def xqnetwork_macbind_info(self) -> models.MACBindInfo:
+        return apply_model(
+            models.MACBindInfo,
+            self.do_get_request("/xqnetwork/macbind_info")
+        )
 
-    def xqnetwork_dmz(self):
-        return self.do_get_request("/xqnetwork/dmz")
+    def xqnetwork_dmz(self) -> models.DMZResponse:
+        return apply_model(
+            models.DMZResponse,
+            self.do_get_request("/xqnetwork/dmz")
+        )
 
-    def xqnetwork_portforward(self):
-        return self.do_get_request("/xqnetwork/portforward")
+    def xqnetwork_portforward(self) -> models.PortForwardList:
+        return apply_model(
+            models.PortForwardList,
+            self.do_get_request("/xqnetwork/portforward")
+        )
 
-    def misystem_devicelist(self):
-        return self.do_get_request("/misystem/devicelist")
+    def misystem_devicelist(self) -> models.DeviceListResponse:
+        return apply_model(
+            models.DeviceListResponse,
+            self.do_get_request("/misystem/devicelist")
+        )
 
-    def misystem_newstatus(self):
-        return self.do_get_request("/misystem/newstatus")
+    def misystem_newstatus(self) -> models.NewStatusResponse:
+        return apply_model(
+            models.NewStatusResponse,
+            self.do_get_request("/misystem/newstatus")
+        )
 
     def misystem_sys_time(self):
         return self.do_get_request("/misystem/sys_time")

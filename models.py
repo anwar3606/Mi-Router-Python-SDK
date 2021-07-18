@@ -1,7 +1,8 @@
 from enum import Enum
+from ipaddress import IPv4Address
 from typing import List
 
-from pydantic import BaseModel, validator, root_validator
+from pydantic import BaseModel, validator, root_validator, Field
 
 
 # noinspection PyRedeclaration
@@ -31,8 +32,13 @@ class VPNStatusResponse(BaseModel):
 
 
 class IP(BaseModel):
-    mask: str
-    address: str
+    mask: IPv4Address
+    address: IPv4Address
+
+
+class IPv4(BaseModel):
+    mask: IPv4Address
+    ip: IPv4Address
 
 
 class PPOEStatus(BaseModel):
@@ -127,3 +133,151 @@ class WANInfo(BaseModel):
 class WANDetails(BaseModel):
     code: int
     info: WANInfo
+
+
+class MacFilterDeviceStatistics(BaseModel):
+    mac: str
+    maxdownloadspeed: int
+    upload: int
+    upspeed: int
+    ip: str
+    downspeed: int
+    online: int
+    dev: str
+    maxuploadspeed: int
+    download: int
+
+
+class DeviceList(BaseModel):
+    isap: int
+    parent: str
+    added: int = None
+    ip: str
+    port: int
+    hostname: str
+    mac: str
+    origin_name: str
+    ptype: int
+    authority: dict
+    company: dict
+    push: int
+    name: str
+    times: int
+    type: str
+    statistics: MacFilterDeviceStatistics
+    ctype: int
+    online: int
+
+
+class MacFilterInfo(BaseModel):
+    weblist: List
+    flist: List[DeviceList]
+    code: int
+
+
+class LanDHCPInfo(BaseModel):
+    leasetime: str
+    limit: int
+    leasetimeUnit: str
+    start: int
+    leasetimeNum: int
+    lanIp: List[IP]
+    ignore: int
+
+
+class LanDHCPDetails(BaseModel):
+    code: int
+    info: List[LanDHCPInfo]
+
+
+class LanInfoInfo(BaseModel):
+    mac: str
+    uptime: int
+    status: int
+    dnsAddrs: str
+    dnsAddrs1: str
+    ipv4: List[IPv4]
+
+
+class LanInfoDetails(BaseModel):
+    code: int
+    info: LanInfoInfo
+    linkList: List[int]
+
+
+class MacBindList(BaseModel):
+    mac: str
+    tag: int
+    name: str
+    ip: str
+
+
+class MACBindInfo(BaseModel):
+    devicelist: List[DeviceList]
+    list: List[MacBindList]
+    code: int
+
+
+class DMZResponse(BaseModel):
+    status: int
+    lanip: str
+    code: int
+
+
+class PortForwardItem(BaseModel):
+    proto: int
+    name: str
+    ftype: int
+    destport: int
+    srcport: int
+    destip: str
+
+
+class PortForwardList(BaseModel):
+    status: int
+    list: List[PortForwardItem]
+    code: int
+
+
+class DeviceListItemIPDetails(BaseModel):
+    downspeed: int
+    online: int
+    active: int
+    upspeed: int
+    ip: IPv4Address
+
+
+class DeviceListItemStatistics(BaseModel):
+    downspeed: int
+    online: int
+    upspeed: int
+
+
+class DeviceListItem(BaseModel):
+    mac: str
+    oname: str
+    isap: int
+    parent: str
+    authority: dict
+    push: int
+    online: int
+    name: str
+    times: int
+    ip: List[DeviceListItemIPDetails]
+    statistics: DeviceListItemStatistics
+    icon: str
+    type: int
+
+
+class DeviceListResponse(BaseModel):
+    mac: str
+    list: List[DeviceListItem]
+    code: int
+
+
+class NewStatusResponse(BaseModel):
+    count: int
+    code: int
+    hardware: dict
+    two_g: dict = Field(..., alias='2g')
+    five_g: dict = Field(..., alias='5g')
