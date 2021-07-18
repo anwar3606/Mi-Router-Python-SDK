@@ -1,6 +1,6 @@
 from enum import Enum
 from ipaddress import IPv4Address
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, validator, root_validator, Field
 
@@ -281,3 +281,56 @@ class NewStatusResponse(BaseModel):
     hardware: dict
     two_g: dict = Field(..., alias='2g')
     five_g: dict = Field(..., alias='5g')
+
+
+class Time(BaseModel):
+    min: int
+    day: int
+    index: int
+    month: int
+    year: int
+    sec: int
+    hour: int
+    timezone: str
+
+
+class TimeResponse(BaseModel):
+    time: Time
+    code: int
+
+
+class QoSInfo(BaseModel):
+    band: dict
+    code: int
+    status: dict
+    local: dict
+    guest: dict
+    list: list
+
+
+class SmartVPNConnectStatus(Enum):
+    CONNECTED = 0
+    DISSCONNECTED = 1
+
+
+class SmartVPNMode(Enum):
+    TRAFFIC_BY_DEVICE = 2
+    TRAFFIC_BY_SEVICE = 1
+
+
+class SmartVPNStatus(Enum):
+    ON = 1
+    OFF = 0
+
+
+class SmartVPNInfo(BaseModel):
+    status: SmartVPNConnectStatus
+    mode: SmartVPNMode
+    ulist: Optional[List[str]]
+    mlist: Optional[List[str]]
+    switch: SmartVPNStatus
+
+
+class SmartVPNInfoResponse(BaseModel):
+    code: int
+    info: SmartVPNInfo

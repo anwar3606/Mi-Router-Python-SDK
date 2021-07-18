@@ -144,35 +144,26 @@ class MiRouterAPI:
             self.do_get_request("/misystem/newstatus")
         )
 
-    def misystem_sys_time(self):
-        return self.do_get_request("/misystem/sys_time")
+    def misystem_sys_time(self) -> models.TimeResponse:
+        return apply_model(
+            models.TimeResponse,
+            self.do_get_request("/misystem/sys_time")
+        )
 
-    def misystem_qos_info(self):
-        return self.do_get_request("/misystem/qos_info")
+    def misystem_qos_info(self) -> models.QoSInfo:
+        return apply_model(
+            models.QoSInfo,
+            self.do_get_request("/misystem/qos_info")
+        )
 
-    def misystem_smartvpn_info(self):
-        """
-        :return: {
-            "info": {
-                "status": 0,
-                "mode": 1,
-                "ulist": [
-                    "10.1.0.26",
-                    "10.1.0.33",
-                    "10.5.20.38",
-                    "10.1.0.1",
-                    "10.5.8.191",
-                    "10.1.0.47"
-                ],
-                "switch": 1
-            },
-            "code": 0
-        }
-        """
-        return self.do_get_request("/misystem/smartvpn_info")
+    def misystem_smartvpn_info(self) -> models.SmartVPNInfoResponse:
+        return apply_model(
+            models.SmartVPNInfoResponse,
+            self.do_get_request("/misystem/smartvpn_info")
+        )
 
     @raise_authentication_error
-    def misystem_smartvpn_info(self, service_url, opt=0):
+    def misystem_smartvpn_url(self, service_url, opt=0):
         """
         Add new entry to Traffic by service list
         :param service_url: web url/ip that you want to be access by vpn
@@ -189,7 +180,7 @@ class MiRouterAPI:
 
         return response
 
-    def misystem_smartvpn_switch(self, mode):
+    def misystem_smartvpn_switch(self, mode : models.SmartVPNMode):
         """
         Switch between "Traffic by service" (1) or "Traffic by device" (2)
         :param mode: 1 or 2
