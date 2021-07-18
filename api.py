@@ -1,3 +1,4 @@
+import json
 from functools import wraps
 
 import requests
@@ -80,7 +81,10 @@ class MiRouterAPI:
         response = requests.post(self.base_route + url, data=data)
         response.raise_for_status()
 
-        return response.json()
+        try:
+            return response.json()
+        except json.JSONDecodeError:
+            return response.text
 
     def xqnetwork_pppoe_status(self) -> models.PPOEStatus:
         return apply_model(
@@ -212,8 +216,58 @@ class MiRouterAPI:
             self.do_get_request("/xqsystem/vpn")
         )
 
+    def xqsystem_vpn_status(self) -> models.VPNStatusResponse:
+        """
+        Returns VPN Connection status
+        """
+        return apply_model(
+            models.VPNStatusResponse,
+            self.do_get_request("/xqsystem/vpn_status")
+        )
+
+    def xqsystem_vpn_switch(self, id: str, connect: models.BasicStatus) -> models.BasicCodeResponse:
+        """
+        Connectes to a vpn profile with the id params
+        :param id:
+        :param connect:
+        :return:
+        """
+        return apply_model(
+            models.BasicCodeResponse,
+            self.do_get_request(f"/xqsystem/vpn_switch?conn={connect.value}&id={id}")
+        )
+
+    def xqsystem_vpn_set_vpn(
+            self,
+            name: str,
+            proto: models.VPNProto,
+            server: str,
+            username: str,
+            password: str
+    ) -> None:
+        """
+        Creates a new vpn profile/service
+        :param name:
+        :param proto:
+        :param server:
+        :param username:
+        :param password:
+        :return:
+        """
+        data = models.VPNItem(
+            oname=name,
+            proto=proto,
+            server=server,
+            username=username,
+            password=password
+        )
+        return self.do_post_request("/misystem/smartvpn_url", data=data.dict())
+
     def misystem_router_name(self):
-        return self.do_get_request("/misystem/router_name")
+        return apply_model(
+            models.RouterName,
+            self.do_get_request("/misystem/router_name")
+        )
 
     def misystem_topo_graph(self):
         return self.do_get_request("/misystem/topo_graph")
@@ -247,18 +301,6 @@ class MiRouterAPI:
 
     def xqsystem_get_languages(self):
         return self.do_get_request("/xqsystem/get_languages")
-
-    def xqsystem_vpn_status(self) -> models.VPNStatusResponse:
-        """
-        Returns VPN Connection status
-        """
-        return apply_model(
-            models.VPNStatusResponse,
-            self.do_get_request("/xqsystem/vpn_status")
-        )
-
-    def xqsystem_vpn_switch(self):
-        return self.do_get_request("/xqsystem/vpn_switch?conn=0&id=37e62effeeba92ec6a34afcab2287196")
 
     def misns_wifi_share_info(self):
         return self.do_get_request("/misns/wifi_share_info")

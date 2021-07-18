@@ -353,7 +353,7 @@ class BasicStatusResponse(BaseModel):
 
 class VPNProto(str, Enum):
     L2TP = 'l2tp'
-    PPOE = 'ppoe'
+    PPTP = 'pptp'
 
 
 class VPNItem(BaseModel):
@@ -364,8 +364,20 @@ class VPNItem(BaseModel):
     proto: VPNProto
 
 
+class VPNCreateItem(BaseModel):
+    id = Optional[str]
+    oname: Optional[str]
+    proto: VPNProto
+    server: str
+    username: str
+    password: str
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
 class VPNCurrentItem(VPNItem):
-    auto: BasicStatus
+    auto: int
 
     @validator('auto', pre=True)
     def convert_to_int(cls, v):
@@ -376,3 +388,9 @@ class VPNResponse(BaseModel):
     code: int
     list: List[VPNItem]
     current: VPNCurrentItem
+
+
+class RouterName(BaseModel):
+    code: int
+    name: str
+    local: str
