@@ -2,6 +2,8 @@ from functools import wraps
 
 import requests
 
+import models
+
 
 class HTTPAuthenticationError(requests.HTTPError):
     """Failed to login"""
@@ -11,10 +13,10 @@ def raise_authentication_error(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         _response = func(*args, **kwargs)
-        if 'code' in _response.json() and _response.json()['code'] == 401:
+        if 'code' in _response and _response['code'] == 401:
             raise HTTPAuthenticationError
-        else:
-            return _response.json()
+
+        return _response
 
     return wrapper
 
@@ -29,6 +31,10 @@ def do_get_request(func):
         return _response
 
     return wrapper
+
+
+def apply_model(model, json_data):
+    return model(**json_data)
 
 
 class MiRouterAPI:
@@ -60,80 +66,63 @@ class MiRouterAPI:
         _response = requests.post(url, data=data)
         _response.raise_for_status()
 
-        return _response
+        return _response.json()
 
     @raise_authentication_error
-    @do_get_request
-    def xqnetwork_pppoe_status(self):
-        return "/xqnetwork/pppoe_status"
+    def do_get_request(self, url, data=None):
+        response = requests.get(self.base_route + url, data=data)
+        response.raise_for_status()
 
-    @raise_authentication_error
-    @do_get_request
-    def xqnetwork_wifi_detail_all(self):
-        return "/xqnetwork/wifi_detail_all"
+        return response.json()
 
-    @raise_authentication_error
-    @do_get_request
+    def xqnetwork_pppoe_status(self) -> models.PPOEStatus:
+        return apply_model(
+            models.PPOEStatus,
+            self.do_get_request("/xqnetwork/pppoe_status")
+        )
+
+    def xqnetwork_wifi_detail_all(self) -> models.WiFiDetails:
+        return apply_model(
+            models.WiFiDetails,
+            self.do_get_request("/xqnetwork/wifi_detail_all")
+        )
+
     def xqnetwork_get_miscan_switch(self):
-        return "/xqnetwork/get_miscan_switch"
+        return self.do_get_request("/xqnetwork/get_miscan_switch")
 
-    @raise_authentication_error
-    @do_get_request
     def xqnetwork_wan_info(self):
-        return "/xqnetwork/wan_info"
+        return self.do_get_request("/xqnetwork/wan_info")
 
-    @raise_authentication_error
-    @do_get_request
     def xqnetwork_wifi_macfilter_info(self):
-        return "/xqnetwork/wifi_macfilter_info"
+        return self.do_get_request("/xqnetwork/wifi_macfilter_info")
 
-    @raise_authentication_error
-    @do_get_request
     def xqnetwork_lan_dhcp(self):
-        return "/xqnetwork/lan_dhcp"
+        return self.do_get_request("/xqnetwork/lan_dhcp")
 
-    @raise_authentication_error
-    @do_get_request
     def xqnetwork_lan_info(self):
-        return "/xqnetwork/lan_info"
+        return self.do_get_request("/xqnetwork/lan_info")
 
-    @raise_authentication_error
-    @do_get_request
     def xqnetwork_macbind_info(self):
-        return "/xqnetwork/macbind_info"
+        return self.do_get_request("/xqnetwork/macbind_info")
 
-    @raise_authentication_error
-    @do_get_request
     def xqnetwork_dmz(self):
-        return "/xqnetwork/dmz"
+        return self.do_get_request("/xqnetwork/dmz")
 
-    @raise_authentication_error
-    @do_get_request
     def xqnetwork_portforward(self):
-        return "/xqnetwork/portforward"
+        return self.do_get_request("/xqnetwork/portforward")
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_devicelist(self):
-        return "/misystem/devicelist"
+        return self.do_get_request("/misystem/devicelist")
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_newstatus(self):
-        return "/misystem/newstatus"
+        return self.do_get_request("/misystem/newstatus")
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_sys_time(self):
-        return "/misystem/sys_time"
+        return self.do_get_request("/misystem/sys_time")
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_qos_info(self):
-        return "/misystem/qos_info"
+        return self.do_get_request("/misystem/qos_info")
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_smartvpn_info(self):
         """
         :return: {
@@ -153,7 +142,7 @@ class MiRouterAPI:
             "code": 0
         }
         """
-        return "/misystem/smartvpn_info"
+        return self.do_get_request("/misystem/smartvpn_info")
 
     @raise_authentication_error
     def misystem_smartvpn_info(self, service_url, opt=0):
@@ -173,8 +162,6 @@ class MiRouterAPI:
 
         return response
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_smartvpn_switch(self, mode):
         """
         Switch between "Traffic by service" (1) or "Traffic by device" (2)
@@ -183,92 +170,62 @@ class MiRouterAPI:
         """
         return f"/misystem/smartvpn_switch?enable=1&mode={mode}"
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_mi_vpn_info(self):
-        return "/misystem/mi_vpn_info"
+        return self.do_get_request("/misystem/mi_vpn_info")
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_router_name(self):
-        return "/misystem/router_name"
+        return self.do_get_request("/misystem/router_name")
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_topo_graph(self):
-        return "/misystem/topo_graph"
+        return self.do_get_request("/misystem/topo_graph")
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_status(self):
-        return "/misystem/status"
+        return self.do_get_request("/misystem/status")
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_active(self):
-        return "/misystem/active"
+        return self.do_get_request("/misystem/active")
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_bandwidth_test(self):
-        return "/misystem/bandwidth_test?history=0"
+        return self.do_get_request("/misystem/bandwidth_test?history=0")
 
-    @raise_authentication_error
-    @do_get_request
     def misystem_set_band(self):
-        return "/misystem/set_band"
+        return self.do_get_request("/misystem/set_band")
 
-    @raise_authentication_error
-    @do_get_request
     def xqdatacenter_request(self):
-        return "/xqdatacenter/request"
+        return self.do_get_request("/xqdatacenter/request")
 
-    @raise_authentication_error
-    @do_get_request
     def xqsystem_reboot(self):
-        return "/xqsystem/reboot?client=web"
+        return self.do_get_request("/xqsystem/reboot?client=web")
 
-    @raise_authentication_error
-    @do_get_request
     def xqsystem_shutdown(self):
-        return "/xqsystem/shutdown"
+        return self.do_get_request("/xqsystem/shutdown")
 
-    @raise_authentication_error
-    @do_get_request
     def xqsystem_country_code(self):
-        return "/xqsystem/country_code"
+        return self.do_get_request("/xqsystem/country_code")
 
-    @raise_authentication_error
-    @do_get_request
     def xqsystem_vpn(self):
-        return "/xqsystem/vpn"
+        return self.do_get_request("/xqsystem/vpn")
 
-    @raise_authentication_error
-    @do_get_request
     def xqsystem_get_location(self):
-        return "/xqsystem/get_location"
+        return self.do_get_request("/xqsystem/get_location")
 
-    @raise_authentication_error
-    @do_get_request
     def xqsystem_get_languages(self):
-        return "/xqsystem/get_languages"
+        return self.do_get_request("/xqsystem/get_languages")
 
-    @raise_authentication_error
-    @do_get_request
-    def xqsystem_vpn_status(self):
-        return "/xqsystem/vpn_status"
+    def xqsystem_vpn_status(self) -> models.VPNStatusResponse:
+        """
+        Returns VPN Connection status
+        """
+        return apply_model(
+            models.VPNStatusResponse,
+            self.do_get_request("/xqsystem/vpn_status")
+        )
 
-    @raise_authentication_error
-    @do_get_request
     def xqsystem_vpn_switch(self):
-        return "/xqsystem/vpn_switch?conn=0&id=37e62effeeba92ec6a34afcab2287196"
+        return self.do_get_request("/xqsystem/vpn_switch?conn=0&id=37e62effeeba92ec6a34afcab2287196")
 
-    @raise_authentication_error
-    @do_get_request
     def misns_wifi_share_info(self):
-        return "/misns/wifi_share_info"
+        return self.do_get_request("/misns/wifi_share_info")
 
-    @raise_authentication_error
-    @do_get_request
     def xqnetdetect_netupspeed(self):
-        return "/xqnetdetect/netupspeed"
+        return self.do_get_request("/xqnetdetect/netupspeed")
