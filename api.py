@@ -75,6 +75,13 @@ class MiRouterAPI:
 
         return response.json()
 
+    @raise_authentication_error
+    def do_post_request(self, url, data=None):
+        response = requests.post(self.base_route + url, data=data)
+        response.raise_for_status()
+
+        return response.json()
+
     def xqnetwork_pppoe_status(self) -> models.PPOEStatus:
         return apply_model(
             models.PPOEStatus,
@@ -163,33 +170,47 @@ class MiRouterAPI:
         )
 
     @raise_authentication_error
-    def misystem_smartvpn_url(self, service_url, opt=0):
+    def misystem_smartvpn_url(
+            self,
+            service_url: str,
+            opt: models.SmartVPNServiceUpdateFlag = models.SmartVPNServiceUpdateFlag.ADD
+    ) -> models.BasicCodeResponse:
         """
         Add new entry to Traffic by service list
         :param service_url: web url/ip that you want to be access by vpn
         :param opt: 0 or 1, 0 to add and use 1 to delete
         :return: {"code":0}
         """
-        url = self.base_route + "/misystem/smartvpn_url"
-        response = requests.post(url, data={
-            url: service_url,
-            opt: opt
-        })
+        return apply_model(
+            models.BasicCodeResponse,
+            self.do_post_request("/misystem/smartvpn_url", data={
+                "url": service_url,
+                "opt": opt.value
+            })
+        )
 
-        response.raise_for_status()
-
-        return response
-
-    def misystem_smartvpn_switch(self, mode : models.SmartVPNMode):
+    def misystem_smartvpn_switch(self, mode: models.SmartVPNMode) -> models.SmartVPNInfo:
         """
         Switch between "Traffic by service" (1) or "Traffic by device" (2)
         :param mode: 1 or 2
         :return:
         """
-        return f"/misystem/smartvpn_switch?enable=1&mode={mode}"
+        return apply_model(
+            models.SmartVPNInfo,
+            self.do_get_request(f"/misystem/smartvpn_switch?enable=1&mode={mode}")
+        )
 
-    def misystem_mi_vpn_info(self):
-        return self.do_get_request("/misystem/mi_vpn_info")
+    def misystem_mi_vpn_info(self) -> models.BasicStatusResponse:
+        return apply_model(
+            models.BasicStatusResponse,
+            self.do_get_request("/misystem/mi_vpn_info")
+        )
+
+    def xqsystem_vpn(self) -> models.VPNResponse:
+        return apply_model(
+            models.VPNResponse,
+            self.do_get_request("/xqsystem/vpn")
+        )
 
     def misystem_router_name(self):
         return self.do_get_request("/misystem/router_name")
@@ -220,9 +241,6 @@ class MiRouterAPI:
 
     def xqsystem_country_code(self):
         return self.do_get_request("/xqsystem/country_code")
-
-    def xqsystem_vpn(self):
-        return self.do_get_request("/xqsystem/vpn")
 
     def xqsystem_get_location(self):
         return self.do_get_request("/xqsystem/get_location")

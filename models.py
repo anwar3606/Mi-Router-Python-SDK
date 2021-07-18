@@ -318,7 +318,7 @@ class SmartVPNMode(Enum):
     TRAFFIC_BY_SEVICE = 1
 
 
-class SmartVPNStatus(Enum):
+class BasicStatus(Enum):
     ON = 1
     OFF = 0
 
@@ -328,9 +328,51 @@ class SmartVPNInfo(BaseModel):
     mode: SmartVPNMode
     ulist: Optional[List[str]]
     mlist: Optional[List[str]]
-    switch: SmartVPNStatus
+    name: Optional[dict]
+    switch: BasicStatus
 
 
 class SmartVPNInfoResponse(BaseModel):
     code: int
     info: SmartVPNInfo
+
+
+class SmartVPNServiceUpdateFlag(Enum):
+    ADD = 0
+    DELETE = 1
+
+
+class BasicCodeResponse(BaseModel):
+    code: int
+
+
+class BasicStatusResponse(BaseModel):
+    code: int
+    status: int
+
+
+class VPNProto(str, Enum):
+    L2TP = 'l2tp'
+    PPOE = 'ppoe'
+
+
+class VPNItem(BaseModel):
+    username: str
+    id: str
+    password: str
+    server: str
+    proto: VPNProto
+
+
+class VPNCurrentItem(VPNItem):
+    auto: BasicStatus
+
+    @validator('auto', pre=True)
+    def convert_to_int(cls, v):
+        return int(v)
+
+
+class VPNResponse(BaseModel):
+    code: int
+    list: List[VPNItem]
+    current: VPNCurrentItem
