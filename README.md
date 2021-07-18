@@ -50,3 +50,6 @@ data = router_api.misystem_status()
 /xqsystem/vpn_status
 /xqsystem/vpn_switch
 ```
+
+## Tested with models
+1. AX1800
