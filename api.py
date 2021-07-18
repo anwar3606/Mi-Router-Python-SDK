@@ -135,7 +135,53 @@ class MiRouterAPI:
     @raise_authentication_error
     @do_get_request
     def misystem_smartvpn_info(self):
+        """
+        :return: {
+            "info": {
+                "status": 0,
+                "mode": 1,
+                "ulist": [
+                    "10.1.0.26",
+                    "10.1.0.33",
+                    "10.5.20.38",
+                    "10.1.0.1",
+                    "10.5.8.191",
+                    "10.1.0.47"
+                ],
+                "switch": 1
+            },
+            "code": 0
+        }
+        """
         return "/misystem/smartvpn_info"
+
+    @raise_authentication_error
+    def misystem_smartvpn_info(self, service_url, opt=0):
+        """
+        Add new entry to Traffic by service list
+        :param service_url: web url/ip that you want to be access by vpn
+        :param opt: 0 or 1, 0 to add and use 1 to delete
+        :return: {"code":0}
+        """
+        url = self.base_route + "/misystem/smartvpn_url"
+        response = requests.post(url, data={
+            url: service_url,
+            opt: opt
+        })
+
+        response.raise_for_status()
+
+        return response
+
+    @raise_authentication_error
+    @do_get_request
+    def misystem_smartvpn_switch(self, mode):
+        """
+        Switch between "Traffic by service" (1) or "Traffic by device" (2)
+        :param mode: 1 or 2
+        :return:
+        """
+        return f"/misystem/smartvpn_switch?enable=1&mode={mode}"
 
     @raise_authentication_error
     @do_get_request
@@ -226,4 +272,3 @@ class MiRouterAPI:
     @do_get_request
     def xqnetdetect_netupspeed(self):
         return "/xqnetdetect/netupspeed"
-
