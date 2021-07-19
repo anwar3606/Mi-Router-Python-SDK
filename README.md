@@ -1,4 +1,4 @@
-# Mi Router Python SDK
+# Mi Xiaomi Router Python SDK
 
 As Xiaomi doesn't have any official SDK of any sorts. This is a hacky solution to work with for now.
 
