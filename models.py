@@ -394,3 +394,115 @@ class RouterName(BaseModel):
     code: int
     name: str
     local: str
+
+
+class NetworkBandwidth(int):
+    def __init__(self, value):
+        self.value = value
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):
+        if isinstance(v, str):
+            return cls(int(v))
+        return cls(v)
+
+    @property
+    def Bytes(self):
+        return self.value
+
+    @property
+    def KiloBytes(self):
+        return round(float(self.value / (2 ** 10)), 2)
+
+    @property
+    def MegaBytes(self):
+        return round(float(self.value / (2 ** 20)), 2)
+
+    @property
+    def GigaBytes(self):
+        return round(float(self.value / (2 ** 30)), 2)
+
+    @property
+    def TeraBytes(self):
+        return round(float(self.value / (2 ** 40)), 2)
+
+
+class SystemDevice(BaseModel):
+    mac: str
+    maxdownloadspeed: NetworkBandwidth
+    isap: Optional[int]
+    upload: NetworkBandwidth
+    upspeed: NetworkBandwidth
+    downspeed: NetworkBandwidth
+    online: int
+    devname: str
+    maxuploadspeed: NetworkBandwidth
+    download: NetworkBandwidth
+
+
+class SystemStatusCPU(BaseModel):
+    core: int
+    hz: str
+    load: int
+
+
+class SystemStatusMemory(BaseModel):
+    usage: float
+    total: str
+    hz: str
+    type: str
+
+
+class SystemStatusHardware(BaseModel):
+    mac: str
+    platform: str
+    version: str
+    channel: str
+    sn: str
+
+
+class SystemStatusWAN(BaseModel):
+    downspeed: NetworkBandwidth
+    maxdownloadspeed: NetworkBandwidth
+    devname: str = None
+    upload: NetworkBandwidth
+    upspeed: NetworkBandwidth
+    maxuploadspeed: NetworkBandwidth
+    download: NetworkBandwidth
+
+    @validator('devname')
+    def convert_nil(cls, v):
+        if v == 'nil':
+            return None
+        return v
+
+
+class SystemStatusResponse(BaseModel):
+    code: int
+    count: dict
+    upTime: float
+    hardware: SystemStatusHardware
+    dev: List[SystemDevice]
+    cpu: SystemStatusCPU
+    mem: SystemStatusMemory
+    wan: SystemStatusWAN
+
+
+class LocationResponse(BaseModel):
+    location: str
+    code: int
+
+
+class LanguageResponse(BaseModel):
+    list: List[dict]
+    code: int
+    lang: str
+
+
+class WiFiShareInfoResponse(BaseModel):
+    code: int
+    info: dict

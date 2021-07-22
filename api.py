@@ -272,8 +272,11 @@ class MiRouterAPI:
     def misystem_topo_graph(self):
         return self.do_get_request("/misystem/topo_graph")
 
-    def misystem_status(self):
-        return self.do_get_request("/misystem/status")
+    def misystem_status(self) -> models.SystemStatusResponse:
+        return apply_model(
+            models.SystemStatusResponse,
+            self.do_get_request("/misystem/status")
+        )
 
     def misystem_active(self):
         return self.do_get_request("/misystem/active")
@@ -296,14 +299,23 @@ class MiRouterAPI:
     def xqsystem_country_code(self):
         return self.do_get_request("/xqsystem/country_code")
 
-    def xqsystem_get_location(self):
-        return self.do_get_request("/xqsystem/get_location")
+    def xqsystem_get_location(self) -> models.LocationResponse:
+        return apply_model(
+            models.LocationResponse,
+            self.do_get_request("/xqsystem/get_location")
+        )
 
-    def xqsystem_get_languages(self):
-        return self.do_get_request("/xqsystem/get_languages")
+    def xqsystem_get_languages(self) -> models.LanguageResponse:
+        return apply_model(
+            models.LanguageResponse,
+            self.do_get_request("/xqsystem/get_languages")
+        )
 
-    def misns_wifi_share_info(self):
-        return self.do_get_request("/misns/wifi_share_info")
+    def misns_wifi_share_info(self) -> models.WiFiShareInfoResponse:
+        return apply_model(
+            models.WiFiShareInfoResponse,
+            self.do_get_request("/misns/wifi_share_info")
+        )
 
     def xqnetdetect_netupspeed(self):
         return self.do_get_request("/xqnetdetect/netupspeed")
