@@ -66,6 +66,14 @@ def enable_smart_vpn():
     api.misystem_smartvpn_switch(BasicStatus.ON, SmartVPNMode.TRAFFIC_BY_SEVICE)
 
 
+def switch_traffic_by_service():
+    api.misystem_smartvpn_switch(BasicStatus.ON, SmartVPNMode.TRAFFIC_BY_SEVICE)
+
+
+def switch_traffic_by_device():
+    api.misystem_smartvpn_switch(BasicStatus.ON, SmartVPNMode.TRAFFIC_BY_DEVICE)
+
+
 if __name__ == '__main__':
     actions = {
         '1': {"prompt": "Connect", "action": connect_vpn},
@@ -83,6 +91,9 @@ if __name__ == '__main__':
 
         '10': {"prompt": "Enable Smart VPN", "action": enable_smart_vpn},
         '11': {"prompt": "Disable Smart VPN", "action": disable_smart_vpn},
+
+        '12': {"prompt": "Switch Traffic by service", "action": switch_traffic_by_service},
+        '13': {"prompt": "Switch Traffic by device", "action": switch_traffic_by_device},
     }
     while True:
         show_vpn_status()
