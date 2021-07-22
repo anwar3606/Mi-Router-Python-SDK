@@ -1,3 +1,4 @@
+import datetime
 from enum import Enum
 from ipaddress import IPv4Address
 from typing import List, Optional
@@ -63,7 +64,7 @@ class NetworkBandwidth(int):
 class VPNStatusResponse(BaseModel):
     code: int
     status: ConnectionStatus
-    uptime: int
+    uptime: datetime.timedelta
 
 
 class IP(BaseModel):
@@ -343,6 +344,7 @@ class SmartVPNConnectStatus(Enum):
 
 
 class SmartVPNMode(Enum):
+    DISABLED = 0
     TRAFFIC_BY_DEVICE = 2
     TRAFFIC_BY_SEVICE = 1
 
@@ -390,6 +392,7 @@ class VPNItem(BaseModel):
     id: str
     password: str
     server: str
+    oname: Optional[str]
     proto: VPNProto
 
 
@@ -478,7 +481,7 @@ class SystemStatusWAN(BaseModel):
 class SystemStatusResponse(BaseModel):
     code: int
     count: dict
-    upTime: float
+    upTime: datetime.timedelta
     hardware: SystemStatusHardware
     dev: List[SystemDevice]
     cpu: SystemStatusCPU

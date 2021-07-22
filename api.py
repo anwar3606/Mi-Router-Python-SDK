@@ -193,15 +193,16 @@ class MiRouterAPI:
             })
         )
 
-    def misystem_smartvpn_switch(self, mode: models.SmartVPNMode) -> models.SmartVPNInfo:
+    def misystem_smartvpn_switch(self, enable: models.BasicStatus, mode: models.SmartVPNMode) -> models.SmartVPNInfoResponse:
         """
         Switch between "Traffic by service" (1) or "Traffic by device" (2)
+        :param enable:
         :param mode: 1 or 2
         :return:
         """
         return apply_model(
-            models.SmartVPNInfo,
-            self.do_get_request(f"/misystem/smartvpn_switch?enable=1&mode={mode}")
+            models.SmartVPNInfoResponse,
+            self.do_get_request(f"/misystem/smartvpn_switch?enable={enable.value}&mode={mode.value}")
         )
 
     def misystem_mi_vpn_info(self) -> models.BasicStatusResponse:
@@ -223,6 +224,15 @@ class MiRouterAPI:
         return apply_model(
             models.VPNStatusResponse,
             self.do_get_request("/xqsystem/vpn_status")
+        )
+
+    def xqsystem_set_vpnauto(self, switch: models.BasicStatus) -> models.BasicCodeResponse:
+        """
+        Returns VPN Connection status
+        """
+        return apply_model(
+            models.BasicCodeResponse,
+            self.do_get_request(f"/xqsystem/vpn_status?auto={switch.value}")
         )
 
     def xqsystem_vpn_switch(self, id: str, connect: models.BasicStatus) -> models.BasicCodeResponse:
