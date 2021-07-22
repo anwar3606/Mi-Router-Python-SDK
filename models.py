@@ -25,6 +25,41 @@ class ConnectionStatus(Enum):
     Off = 4
 
 
+class NetworkBandwidth(int):
+    def __init__(self, value):
+        self.value = value
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):
+        if isinstance(v, str):
+            return cls(int(v))
+        return cls(v)
+
+    @property
+    def Bytes(self):
+        return self.value
+
+    @property
+    def KiloBytes(self):
+        return round(float(self.value / (2 ** 10)), 2)
+
+    @property
+    def MegaBytes(self):
+        return round(float(self.value / (2 ** 20)), 2)
+
+    @property
+    def GigaBytes(self):
+        return round(float(self.value / (2 ** 30)), 2)
+
+    @property
+    def TeraBytes(self):
+        return round(float(self.value / (2 ** 40)), 2)
+
+
 class VPNStatusResponse(BaseModel):
     code: int
     status: ConnectionStatus
@@ -58,12 +93,6 @@ class WiFiChannelInfo(BaseModel):
     bandwidth: int = None
     bandList: List[int]
     channel: int
-
-    @validator('bandwidth')
-    def convert_nil(cls, v):
-        if v == 'nil':
-            return None
-        return v
 
 
 class WiFiEncryptionTypes(str, Enum):
@@ -138,14 +167,14 @@ class WANDetails(BaseModel):
 class MacFilterDeviceStatistics(BaseModel):
     mac: str
     maxdownloadspeed: int
-    upload: int
-    upspeed: int
+    upload: NetworkBandwidth
+    upspeed: NetworkBandwidth
     ip: str
-    downspeed: int
+    downspeed: NetworkBandwidth
     online: int
     dev: str
-    maxuploadspeed: int
-    download: int
+    maxuploadspeed: NetworkBandwidth
+    download: NetworkBandwidth
 
 
 class DeviceList(BaseModel):
@@ -394,41 +423,6 @@ class RouterName(BaseModel):
     code: int
     name: str
     local: str
-
-
-class NetworkBandwidth(int):
-    def __init__(self, value):
-        self.value = value
-
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        if isinstance(v, str):
-            return cls(int(v))
-        return cls(v)
-
-    @property
-    def Bytes(self):
-        return self.value
-
-    @property
-    def KiloBytes(self):
-        return round(float(self.value / (2 ** 10)), 2)
-
-    @property
-    def MegaBytes(self):
-        return round(float(self.value / (2 ** 20)), 2)
-
-    @property
-    def GigaBytes(self):
-        return round(float(self.value / (2 ** 30)), 2)
-
-    @property
-    def TeraBytes(self):
-        return round(float(self.value / (2 ** 40)), 2)
 
 
 class SystemDevice(BaseModel):
